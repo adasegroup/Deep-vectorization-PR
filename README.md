@@ -129,6 +129,8 @@ Look at notebooks pretrain_model_loading_and_evaluation_for_line.ipynb and
 pretrain_model_loading_and_evaluation_for_curve.ipynb , for an example how to run primitive estimation
 and refinement for curve and line.
 
+For results on bigger datasets please look at the according papaer at section with evaluataion.
+
 
 <b>References:</b>  
 1) V. Egiazarian, O. Voynov, A. Artemov, D. Volkhonskiy, A. Safin, M. Taktasheva, D. Zorin, and E. Burnaev.
