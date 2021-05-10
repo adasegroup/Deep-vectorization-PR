@@ -116,7 +116,7 @@ Because this team consists of only one member, all proposed tasks would be done 
 
 <b>6. Project Structure </b>
 
-The project have module-like structure.
+The project has a module-like structure.
 The main modules are cleaning, vectorization, refinement, and merging(each module has an according to folder). 
 Each folder has Readme with more details. Here is the brief content of each folder.
 
@@ -136,8 +136,7 @@ Look at notebooks pretrain_model_loading_and_evaluation_for_line.ipynb and
 pretrain_model_loading_and_evaluation_for_curve.ipynb , for an example how to run primitive estimation
 and refinement for curve and line.
 
-For results on bigger datasets please look at the according papaer at section with evaluataion.
-
+P.s. For results on bigger datasets please look at the according to paper in the section with evaluation(p 11, table 1.).
 
 <b>References:</b>  
 1) V. Egiazarian, O. Voynov, A. Artemov, D. Volkhonskiy, A. Safin, M. Taktasheva, D. Zorin, and E. Burnaev.
