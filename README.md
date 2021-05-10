@@ -3,18 +3,6 @@
 Base code was takwn from the [official repository](https://github.com/Vahe1994/Deep-Vectorization-of-Technical-Drawings) .
 Code developed here is also commited to the main repository.
 
-[comment]: <> (##  Table to take track of what was done from tasks)
-
-[comment]: <> (More about information about tasks could be found in section 4 from the report below.)
-
-[comment]: <> (| Task №       | Status         | )
-
-[comment]: <> (| ------------- |:-------------:| )
-
-[comment]: <> (| visualization | No        |  )
-
-[comment]: <> (| requirement    | No        |   )
-
 
 ## Dataset
 Scripts to download dataset are in folder dataset/.
@@ -44,6 +32,25 @@ and refinement for curve and line.
 
 ## How to train
 Look at vectorization/srcipts/train_vectorizatrion (currently under refactoring)
+
+
+##  Table to take track of what was done from tasks
+
+More information about tasks could be found in section 4 from the report below.
+
+| Task №       | Status         |
+| ------------- |:-------------:|
+| visualization | partly        |
+| requirement    | added        |
+| setup.py    | added and tested|
+| jupyter notebooks    | added almost all and tested|
+| documentation | partly|
+|pypeline eval|no|
+|models|yes|
+|train.py refactor|no|
+|functions descriptions|partly|
+|docker file|added and tested|
+
 
 
 Below you can find a project report for the course. 
