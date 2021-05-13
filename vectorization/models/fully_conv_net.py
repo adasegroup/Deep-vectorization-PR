@@ -45,14 +45,16 @@ class FullyConvolutionalNet(ParameterizedModule):
             nn.LeakyReLU(),
             self.pooling((2, 2)),
 
-            nn.Conv2d(128, 128, kernel_size=(3, 3)),
+            nn.Conv2d(128, 128, kernel_size=(3, 3), bias=False),
             nn.Dropout(p=0.2),
             nn.BatchNorm2d(128),
             nn.LeakyReLU(),
             nn.Conv2d(128, 128, kernel_size=(3, 3)),
+            nn.LeakyReLU(),
             self.pooling((2, 2)),
             nn.Conv2d(128, 64, kernel_size=(3, 3)),
-            nn.Conv2d(64, 64, kernel_size=(3, 3)),
+            nn.LeakyReLU(),
+            nn.Conv2d(64, 64, kernel_size=(3, 3), bias=False),
             nn.BatchNorm2d(64),
             nn.LeakyReLU(),
             self.adpooling((10, 6)),  #FIXME (n_primitives, n_predicted_params)
