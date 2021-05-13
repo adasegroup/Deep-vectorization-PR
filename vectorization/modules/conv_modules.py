@@ -6,6 +6,7 @@ import torchvision.models as models
 from vectorization.modules.maybe_module import MaybeModule
 from .base import ParameterizedModule
 
+# from vectorization.models.common import resnet_model_creator, vgg_model_creator
 
 class ResnetBlock(nn.Module):
     def __init__(self, resample=None):
