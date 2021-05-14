@@ -4,6 +4,7 @@ from merging.utils.merging_for_lines_functions import tensor_vector_graph_numpy,
 import argparse
 import torch
 
+
 def postprocess(y_pred_render, patches_offsets, input_rgb, cleaned_image, it, options):
     '''
 
@@ -38,6 +39,4 @@ def postprocess(y_pred_render, patches_offsets, input_rgb, cleaned_image, it, op
     save_svg(result_tuning, cleaned_image.shape, options.image_name[it], options.output_dir + 'iou_postprocess/')
     result_tuning = lines_matching(result_tuning, frac=0.07)
     save_svg(result_tuning, cleaned_image.shape, options.image_name[it], options.output_dir + 'lines_matching/')
-
-
     return result_tuning

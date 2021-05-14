@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import division
-
-import os, sys
-
-sys.path.append("..")
-sys.path.append(os.path.join(os.getcwd(), '..'))
-
 from tqdm import tqdm
-
+import os
+import sys
 import numpy as np
 import os
 import math
-
-
 from scipy.spatial import distance
 
 from sklearn.linear_model import LinearRegression
@@ -20,10 +13,10 @@ from sklearn import linear_model, datasets
 
 import util_files.data.graphics_primitives as graphics_primitives
 from util_files.rendering.cairo import render_with_skeleton
-
 from util_files.geometric import liang_barsky_screen
 
-
+sys.path.append("..")
+sys.path.append(os.path.join(os.getcwd(), '..'))
 
 
 def ordered(line):
@@ -34,6 +27,7 @@ def ordered(line):
 
     return np.array([min_x, min_y, max_x, max_y])
 
+
 def clip_to_box(y_pred, box_size=(64, 64)):
     width, height = box_size
     bbox = (0, 0, width, height)
@@ -42,7 +36,7 @@ def clip_to_box(y_pred, box_size=(64, 64)):
         clipped_point1, clipped_point2, is_drawn = \
             liang_barsky_screen(point1, point2, bbox)
     except:
-        np.asarray([np.nan, np.nan, np.nan, np.nan, np.nan, np.nan])
+        return np.asarray([np.nan, np.nan, np.nan, np.nan, np.nan, np.nan])
 
     if (clipped_point1 and clipped_point2):
         return np.asarray([clipped_point1, clipped_point2, y_pred[4:]]).ravel()
@@ -63,6 +57,7 @@ def assemble_vector_patches(patches_vector, patches_offsets):
         primitives.append(patch_vector)
     return np.array(primitives)
 
+
 def tensor_vector_graph_numpy(y_pred_render, patches_offsets, options):
     nump = np.array(list(map(clip_to_box, y_pred_render.reshape(-1, 6).cpu().detach().numpy())))
     nump = assemble_vector_patches(np.array((nump.reshape(-1, options.model_output_count, 6))),
@@ -73,9 +68,9 @@ def tensor_vector_graph_numpy(y_pred_render, patches_offsets, options):
 
     nump = nump[(nump[:, -2] > 0.3)]
     nump = nump[(nump[:, -1] > 0.5)]
-    print('nump',nump.shape)
+    print('nump', nump.shape)
     nump = nump[((nump[:, 0] - nump[:, 2]) ** 2 + (nump[:, 1] - nump[:, 3]) ** 2 >= 3)]
-    print('nump',nump.shape)
+    print('nump', nump.shape)
     return nump
 
 
@@ -125,6 +120,7 @@ def merge_close_lines(lines, threshold=0.5):
 
     return np.array([dt[0], y_pred[0], dt[-1], y_pred[-1]])
 
+
 def point_to_line_distance(point, line):
     px, py = point
     x1, y1, x2, y2 = line
@@ -133,6 +129,7 @@ def point_to_line_distance(point, line):
     if dx == dy == 0:  # the segment's just a point
         return math.hypot(px - x1, py - y1)
     return np.abs(dy * px - dx * py + x2 * y1 - x1 * y2) / np.sqrt(dy ** 2 + dx ** 2)
+
 
 def point_segment_distance(point, line):
     px, py = point
@@ -161,6 +158,7 @@ def point_segment_distance(point, line):
 
     return math.hypot(dx, dy)
 
+
 def dist(line0, line1):
     if (point_to_line_distance(line0[:2], line1[:4]) >= 2 or point_to_line_distance(line0[2:4], line1[
                                                                                                 :4]) >= 2 or point_to_line_distance(
@@ -187,6 +185,7 @@ def dfs(graph, start):
 def line_legth(line):
     return np.sqrt((line[0] - line[2]) ** 2 + (line[1] - line[3]) ** 2)
 
+
 def intersect(line0, line1):
     # Solve the system [p1-p0, q1-q0]*[t1, t2]^T = q0 - p0
     # where line0 = (p0, p1) and line1 = (q0, q1)
@@ -206,6 +205,7 @@ def intersect(line0, line1):
         return [(t1, t2)]
     return []
 
+
 def angle_radians(pt1, pt2):
     x1, y1 = pt1
     x2, y2 = pt2
@@ -218,6 +218,7 @@ def angle_radians(pt1, pt2):
 def normalize(x):
     return x / np.linalg.norm(x)
 
+
 def compute_angle(line0, line1):
     pt1 = normalize([line0[2] - line0[0], line0[3] - line0[1]])
     pt2 = normalize([line1[2] - line1[0], line1[3] - line1[1]])
@@ -226,11 +227,12 @@ def compute_angle(line0, line1):
         angle = math.degrees(angle_radians(pt1, pt2))
     except:
         angle = 0
-    if (angle >= 90 and angle <= 270):
+    if angle >= 90 and angle <= 270:
         angle = np.abs(180 - angle)
-    elif (angle > 270 and angle <= 360):
+    elif angle > 270 and angle <= 360:
         angle = 360 - angle
     return angle
+
 
 def merge_close(lines, idx, widths, tol=1e-3, max_dist=5, max_angle=15, window_width=100):
     window = [-window_width, -window_width, window_width, window_width]
@@ -255,7 +257,7 @@ def merge_close(lines, idx, widths, tol=1e-3, max_dist=5, max_angle=15, window_w
 
     for i in range(n):
 
-        if (line_legth(lines[i, :4]) < 3):
+        if line_legth(lines[i, :4]) < 3:
             continue
 
         elif (close[i]) and (i not in merged):
@@ -267,6 +269,7 @@ def merge_close(lines, idx, widths, tol=1e-3, max_dist=5, max_angle=15, window_w
         elif i not in merged:
             result.append((lines[i]))
     return result
+
 
 def draw_with_skeleton(lines, drawing_scale=1, skeleton_line_width=0, skeleton_node_size=0, max_x=64, max_y=64):
     scaled_primitives = lines.copy()
@@ -296,10 +299,13 @@ def maximiz_final_iou(nump, input_rgb):
             mse_ref = tmp_scr
         l += 1
     return lines
-def two_point_dist(p1,p2):
+
+
+def two_point_dist(p1, p2):
     p1 = np.array(p1)
     p2 = np.array(p2)
     return np.sqrt((np.square(p1-p2)).sum())
+
 
 def line(p1):
     A = (p1[1] - p1[3])
@@ -317,6 +323,7 @@ def intersection(L1, L2):
         return x,y
     else:
         return []
+
 
 def lines_matching(lines, frac = 0.01):
     """
@@ -346,12 +353,8 @@ def lines_matching(lines, frac = 0.01):
     return lines
 
 
-
-
-
 def save_svg(result_vector, size, name, output_dir):
     print(size)
     os.makedirs(output_dir, exist_ok=True)
     img = draw_with_skeleton(result_vector, drawing_scale=1, skeleton_line_width=0, skeleton_node_size=0, max_x=64, max_y=64)
     return img
-

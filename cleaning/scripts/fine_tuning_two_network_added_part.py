@@ -100,18 +100,15 @@ def validate(tb, val_loader, unet, gen, loss_func, global_step ):
 
             # Cleaning prediction
             logits_restor, logits_extract = None, unet(x_input)
-            #1 - Cleaning prediction
+            # 1 - Cleaning prediction
             logits_extract = 1 - logits_extract.unsqueeze(1)
 
             y_restor = 1. - y_restor.type(torch.FloatTensor).cuda().unsqueeze(1)
 
-            #generator prediction based on cleaning prediction
+            # generator prediction based on cleaning prediction
             logits_restore = gen.forward(logits_extract).unsqueeze(1)  # restoration + extraction
 
-          
-
             loss = loss_func(1 - (logits_extract + logits_restore), None, 1- y_restor,None )
-            
 
             val_loss_epoch.append(loss.cpu().data.numpy())
             iou_scr_without_gan = iou_score(1 - torch.round(logits_extract.squeeze(1)).cpu().long().numpy(),1 - torch.round(y_restor.squeeze(1)).cpu().long().numpy())
@@ -125,7 +122,6 @@ def validate(tb, val_loader, unet, gen, loss_func, global_step ):
     tb.add_scalar('val_iou_extract', np.mean(val_iou_extract), global_step=global_step)
     tb.add_scalar('val_loss', np.mean(val_loss_epoch), global_step=global_step)
     tb.add_scalar('val_iou_without_gan', np.mean(val_iou_without_gan), global_step=global_step)
-    
 
     out_grid = torchvision.utils.make_grid(1.- torch.clamp(logits_extract + logits_restore, 0, 1).cpu())
     input_grid = torchvision.utils.make_grid(1. - logits_extract.cpu())
@@ -133,7 +129,6 @@ def validate(tb, val_loader, unet, gen, loss_func, global_step ):
     input_clean_grid = torchvision.utils.make_grid(x_input.cpu())
                 
     tb.add_image(tag='val_first_input', img_tensor=input_clean_grid, global_step=global_step)
-
     tb.add_image(tag='val_out_extract', img_tensor=out_grid, global_step=global_step)
     tb.add_image(tag='val_input', img_tensor=input_grid, global_step=global_step)
     tb.add_image(tag='val_true', img_tensor=true_grid, global_step=global_step)
@@ -156,16 +151,16 @@ def main(args):
     tb = SummaryWriter(tb_dir)
 
     train_loader, val_loader = get_dataloaders(args)
-
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     if args.model not in ["UNET"]:
         raise Exception('Unsupported type of model, choose from [ "UNET"]')
 
     gen = MODEL_LOSS[args.model]['gen']
-    unet =  MODEL_LOSS[args.model]['unet']
+    unet = MODEL_LOSS[args.model]['unet']
     loss_func = MODEL_LOSS[args.model]['loss']
 
-    gen = gen.cuda()
-    unet = unet.cuda()
+    gen = gen.to(device)
+    unet = unet.to(device)
 
     if 'gen_path' in args and args.gen_path is not None:
         gen = load_model(gen, args.gen_path)
@@ -187,25 +182,22 @@ def main(args):
         for x_input, y_extract, y_restor in tqdm(train_loader):
             # data reading
 #             unet.train()
-            x_input = torch.FloatTensor(x_input).cuda()
-            y_extract = y_extract.type(torch.FloatTensor).cuda().unsqueeze(1)
-            y_restor = 1. - y_restor.type(torch.FloatTensor).cuda().unsqueeze(1)
+            x_input = torch.FloatTensor(x_input).to(device)
+            y_extract = y_extract.type(torch.FloatTensor).to(device).unsqueeze(1)
+            y_restor = 1. - y_restor.type(torch.FloatTensor).to(device).unsqueeze(1)
 
             unet.eval()
             with torch.no_grad():
-                logits_restor, logits_extract = None, unet(x_input)
+                logits_extract = unet(x_input)
                 logits_extract = 1 - logits_extract.unsqueeze(1)
 
-
             logits_restore = gen.forward(logits_extract).unsqueeze(1)  # restoration + extraction
-
             # if Cleaning loss use this
-            gen_loss = loss_func(1 - (logits_extract + logits_restore), None, 1- y_restor,None )
+            gen_loss = loss_func(1 - (logits_extract + logits_restore), None, 1-y_restor, None )
             # else if with_restore =True use this
             # input_fake = torch.cat((logits_extract + logits_restore,logits_extract),dim = 1)
             #
             # gen_loss =  loss_func(logits_extract, input_fake, y_extract, y_restor)
-
 
             gen_opt.zero_grad()
             gen_loss.backward()
@@ -213,17 +205,16 @@ def main(args):
 
             gen_step += 1
                 
-            if(np.random.random() <=0.5):
-                disc_step+=1
+            if np.random.random() <= 0.5:
+                disc_step += 1
                 
             global_step += 1
 
             if global_step <= 1:
                 continue
 
-            tb.add_scalar('gen_vectran_loss',gen_loss.item(), global_step=global_step)
+            tb.add_scalar('gen_vectran_loss', gen_loss.item(), global_step=global_step)
 #             tb.add_scalar('train_loss', loss.cpu().data.numpy(), global_step=global_step)
-
 
             if global_step % 100 == 0 or global_step <= 2:
                 out_grid = torchvision.utils.make_grid(1. - torch.clamp(logits_extract + logits_restore, 0, 1).cpu())
@@ -246,7 +237,6 @@ def main(args):
 
                 save_model(gen, os.path.join(tb_dir, 'gen_it_%s.pth' % global_step))
                 save_model(unet, os.path.join(tb_dir, 'unet_it_%s.pth' % global_step))
-
 
 
 if __name__ == '__main__':
