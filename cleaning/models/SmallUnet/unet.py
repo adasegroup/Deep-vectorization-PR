@@ -4,13 +4,14 @@ import os
 import gc
 
 import torch
-import torch, torch.nn as nn
+import torch
+import torch.nn as nn
 import torch.functional as F
 from torch.autograd import Variable
 import numpy as np
 
 
-def CreateConvBnRelu(in_channels, out_channels, dilation=1):
+def create_conv_bn_relu(in_channels, out_channels, dilation=1):
     module = nn.Sequential()
     module.add_module('conv', nn.Conv2d(
         in_channels=in_channels,
@@ -30,35 +31,35 @@ class SmallUnet(nn.Module):
         super(SmallUnet, self).__init__()
 
         # encoder
-        self.add_module('EncConvBnRelu1_1', CreateConvBnRelu(3, 64))
-        self.add_module('EncConvBnRelu1_2', CreateConvBnRelu(64, 64))
+        self.add_module('EncConvBnRelu1_1', create_conv_bn_relu(3, 64))
+        self.add_module('EncConvBnRelu1_2', create_conv_bn_relu(64, 64))
         self.add_module('EncMp1', nn.MaxPool2d(kernel_size=2))
 
-        self.add_module('EncConvBnRelu2_1', CreateConvBnRelu(64, 128))
-        self.add_module('EncConvBnRelu2_2', CreateConvBnRelu(128, 128))
+        self.add_module('EncConvBnRelu2_1', create_conv_bn_relu(64, 128))
+        self.add_module('EncConvBnRelu2_2', create_conv_bn_relu(128, 128))
         self.add_module('EncMp2', nn.MaxPool2d(kernel_size=2))
 
-        self.add_module('EncConvBnRelu3_1', CreateConvBnRelu(128, 256))
-        self.add_module('EncConvBnRelu3_2', CreateConvBnRelu(256, 256))
+        self.add_module('EncConvBnRelu3_1', create_conv_bn_relu(128, 256))
+        self.add_module('EncConvBnRelu3_2', create_conv_bn_relu(256, 256))
         self.add_module('EncMp3', nn.MaxPool2d(kernel_size=2))
 
         # lowest layer
-        self.add_module('ConvBnRelu4_1', CreateConvBnRelu(256, 512))
-        self.add_module('ConvBnRelu4_2', CreateConvBnRelu(512, 512))
+        self.add_module('ConvBnRelu4_1', create_conv_bn_relu(256, 512))
+        self.add_module('ConvBnRelu4_2', create_conv_bn_relu(512, 512))
         self.add_module('Us4', nn.Upsample(scale_factor=2))
 
         # decoder
-        self.add_module('DecConvBnRelu3_1', CreateConvBnRelu(512 + 256, 256))
-        self.add_module('DecConvBnRelu3_2', CreateConvBnRelu(256, 256))
+        self.add_module('DecConvBnRelu3_1', create_conv_bn_relu(512 + 256, 256))
+        self.add_module('DecConvBnRelu3_2', create_conv_bn_relu(256, 256))
         self.add_module('DecUs3', nn.Upsample(scale_factor=2))
 
-        self.add_module('DecConvBnRelu2_1', CreateConvBnRelu(256 + 128, 128))
-        self.add_module('DecConvBnRelu2_2', CreateConvBnRelu(128, 128))
+        self.add_module('DecConvBnRelu2_1', create_conv_bn_relu(256 + 128, 128))
+        self.add_module('DecConvBnRelu2_2', create_conv_bn_relu(128, 128))
         self.add_module('DecUs2', nn.Upsample(scale_factor=2))
 
         # prediction
-        self.add_module('PredConvBnRelu_1', CreateConvBnRelu(128 + 64, 64))
-        self.add_module('PredConvBnRelu_2', CreateConvBnRelu(64, 64))
+        self.add_module('PredConvBnRelu_1', create_conv_bn_relu(128 + 64, 64))
+        self.add_module('PredConvBnRelu_2', create_conv_bn_relu(64, 64))
         self.add_module('PredDense', nn.Conv2d(
             in_channels=64,
             out_channels=1,

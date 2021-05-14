@@ -20,7 +20,7 @@ from cleaning.models.SmallUnet.unet import SmallUnet
 
 MODEL_LOSS = {
     'UNET': {
-        'model': UNet(n_channels=3,n_classes=1,final_tanh=True),
+        'model': UNet(n_channels=3, n_classes=1, final_tanh=True),
         'loss': CleaningLoss(kind='BCE', with_restore=False)
     },
     'SmallUNET': {
@@ -28,7 +28,7 @@ MODEL_LOSS = {
         'loss': CleaningLoss(kind='BCE', with_restore=False)
     },
     'UNET_MSE': {
-        'model': UNet(n_channels=3,n_classes=1),
+        'model': UNet(n_channels=3, n_classes=1),
         'loss': CleaningLoss(kind='MSE', with_restore=False)
     },
 
@@ -38,23 +38,26 @@ MODEL_LOSS = {
 def parse_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model', type=str, required=True, help='What model to use, one of [ "UNET,"UNET_MSE,"SmallUnet"]', default='UNET')
+    parser.add_argument('--model', type=str, required=True,
+                        help='What model to use, one of [ "UNET,"UNET_MSE,"SmallUnet"]', default='UNET')
     parser.add_argument('--n_epochs', type=int, help='Num of epochs for training', default=10)
     parser.add_argument('--datadir', type=str, help='Path to training dataset')
     parser.add_argument('--valdatadir', type=str, help='Path to validation dataset')
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--name', type=str, help='Name of the experiment')
     parser.add_argument('--model_path', type=str, default=None, help='Path to model checkpoint')
+    parser.add_argument('--tb_dir_prefix', type=str,
+                        default='/logs/tb_logs_article/fine_tuning_', help='Path to TB dir and prefix of name')
 
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
+
 
 def get_dataloaders(args):
     train_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.ColorJitter()
     ])
-    #TODO Make sure that this should be MakeDataSynt and not MakeData from dataloader.py
+    # TODO Make sure that this should be MakeDataSynt and not MakeData from dataloader.py
     dset_synt = MakeDataSynt(args.datadir, args.datadir, train_transform, 1)
     dset_val_synt = MakeDataSynt(args.valdatadir, args.valdatadir, train_transform)
 
@@ -121,7 +124,7 @@ def load_model(model, path):
 
 
 def main(args):
-    tb_dir = '/logs/tb_logs_article/fine_tuning_' + args.name 
+    tb_dir = args.tb_dir_prefix + args.name
     tb = SummaryWriter(tb_dir)
 
     train_loader, val_loader = get_dataloaders(args)

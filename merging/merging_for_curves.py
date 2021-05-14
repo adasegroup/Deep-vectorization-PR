@@ -5,13 +5,12 @@ import sys
 
 import numpy as np
 
-sys.path.append('/code')
 from util_files.job_tuples.calculate_results_for_curves import job_tuples
 from util_files.simplification.join_qb import join_quad_beziers
 from util_files.optimization.optimizer.logging import Logger
 from util_files.rendering.cairo import PT_LINE, PT_QBEZIER
 from util_files.data.graphics.graphics import Path, VectorImage
-
+sys.path.append('/code')
 
 def main(options, width_percentile=90, fit_tol=.5, w_tol=np.inf, join_tol=.5):
     logger = Logger.prepare_logger(loglevel='info', logfile=None)
