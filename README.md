@@ -40,14 +40,14 @@ More information about tasks could be found in section 4 from the report below.
 
 | Task №       | Status         |
 | ------------- |:-------------:|
-| visualization | partly        |
+| visualization | yes        |
 | requirement    | added        |
 | setup.py    | added and tested|
-| jupyter notebooks    | added almost all and tested|
+| jupyter notebooks    |added and tested|
 | documentation | partly|
-|pypeline eval|no|
+|pypeline eval|yes|
 |models|yes|
-|train.py refactor|no|
+|train.py refactor|partly|
 |functions descriptions|partly|
 |docker file|added and tested|
 
