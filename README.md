@@ -10,6 +10,12 @@ Scripts to download dataset are in folder dataset/.
 * For PFP, use precision_floorplan_download.py  
   Read ReadMe there for more instructions.
 
+## Compare
+
+To compare with us without running code, you can download our results on the full pipeline on the test set
+for [pfp](https://drive.google.com/file/d/1FGm-JQsvOa5sbi_f_-MMl1XC5Z8JGe0F/view?usp=sharing) and for
+[abc](https://drive.google.com/file/d/1lR5lea3sY4Bhp9QL4MmmPs0kqZ5voPGu/view?usp=sharing).
+
 ## Notebooks
 
 To show how some of the usability of the functions, there are several notebooks in the notebooks folder.
@@ -18,15 +24,47 @@ To show how some of the usability of the functions, there are several notebooks 
 3) Notebook that illustrates  how to work with pretrained model and how to do refinement on lines(without merging)
 4) Notebook that illustrates how to work with pretrained model and how to do refinement on curves(without merging)
 
+## Requirments
+Linux system  
+Python 3
+
+See requirments.txt
+
 ## Models
 
 Download pretrained models for [curve](https://drive.google.com/file/d/18jN37pMvEg9S05sLdAznQC5UZDsLz-za/view?usp=sharing)
 and for [line](https://drive.google.com/file/d/1Zf085V3783zbrLuTXZxizc7utszI9BZR/view?usp=sharing) .
 
+## Dockerfile
+
+Build the docker image:
+
+```bash
+docker build -t Dockerfile owner/name:version .
+```
+example:
+```bash
+docker build -t vahe1994/deep_vectorization:latest .
+```
+
+
+When running container mount folder with reporitory into code/, folder with datasets in data/ folder with logs in logs/
+```bash
+docker run --rm -it --shm-size 128G -p 4045:4045 --mount type=bind,source=/home/code,target=/code --mount type=bind,source=/home/data,target=/data --mount type=bind,source=/home/logs,target=/logs  --name=container_name owner/name:version /bin/bash
+```
+
+Anaconda with packages is installed in follder opt/ . Environement with packages that needed is installed in environment vect-env.
+. To activate it run in container
+```bash
+. /opt/.venv/vect-env/bin/activate/
+```
+
+
+
 ## How to run
-Look at notebooks pretrain_model_loading_and_evaluation_for_line.ipynb and
-pretrain_model_loading_and_evaluation_for_curve.ipynb , for an example how to run primitive estimation
-and refinement for curve and line.
+1. Download models.
+2. Either use Dockerfile to create docker image with needed environment or just install requirements
+3. Run scripts/run_pipeline.sh with correct paths for trained model, data dir and output dir. Don't forget to chose primitive type and primitive count in one patch. 
 
 
 
