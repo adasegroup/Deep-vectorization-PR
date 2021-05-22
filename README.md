@@ -28,7 +28,11 @@ To show how some of the usability of the functions, there are several notebooks 
 Linux system  
 Python 3
 
-See requirments.txt
+See requirments.txt and additional packages
+
+cairo==1.14.12  
+pycairo==1.19.1  
+chamferdist==1.0.0  
 
 ## Models
 
