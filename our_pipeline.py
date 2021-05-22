@@ -227,11 +227,9 @@ def main(options):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-g', '--gpu', action='append', help='GPU to use, can use multiple [default: use CPU].')
-    parser.add_argument('-e', '--epoch_size', type=int, default=20000, help='how many epochs to train [default: 1].')
     parser.add_argument('-c', '--curve_count', type=int, default=10, help='how many epochs to train [default: 1].')
     parser.add_argument('--primitive_type', type=str, default="line", help='line or curve')
-    parser.add_argument('--output_dir', type=str, default="/home/vage/Downloads/testing_line/",
-                        help='dir to folder for output')
+    parser.add_argument('--output_dir', type=str, default="/home/vage/Downloads/testing_line/", help='dir to folder for output')
     parser.add_argument('--diff_render_it', type=int, default=400, help='iteration count')
     parser.add_argument('--init_random', action='store_true', default=False, dest='init_random',
                         help='init model with random [default: False].')
@@ -245,27 +243,12 @@ def parse_args():
     parser.add_argument('--max_angle_to_connect', type=int, default=10, help='max_angle_to_connect in pixel')
     parser.add_argument('--max_distance_to_connect', type=int, default=3, help='max_distance_to_connect in pixel')
     parser.add_argument('--model_path', type=str,
-                        default="/home/vage/Downloads/02.03_safin/29.02_abc/model_curves.weights",
+                        default="/home/vage/Downloads/model_lines.weights",
                         help='parth to trained model')
     parser.add_argument('--json_path', type=str,
-                        default="/code/vectran/models/specs/resnet18_blocks1_bn_64__c2h__trans_heads4_feat256_blocks8_ffmaps512__h2o__out512.json",
+                        default="/home/vage/PycharmProjects/Deep-vectorization-P.R./vectorization/models/specs/resnet18_blocks3_bn_256__c2h__trans_heads4_feat256_blocks4_ffmaps512__h2o__out512.json",
                         help='dir to folder for json file for transformer')
     options = parser.parse_args()
-
-    if None is not options.job_array_config and None is not options.job_array_config:
-        # get a parser
-        for action in parser._actions:
-            action.required = False  # so that we won't get errors when the action
-            action.default = None  # so that we won't get falsely set args when they're not really encountered
-
-        # parse the job array command line
-        with open(options.job_array_config) as jac_file:
-            lines = [line.strip() for line in jac_file.readlines()]
-            job_array_options = parser.parse_args(lines[options.job_array_task_id].split())
-
-        for name, value in job_array_options.__dict__.items():
-            if None is not value:
-                setattr(options, name, value)
 
     return options
 

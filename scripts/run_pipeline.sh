@@ -1,0 +1,2 @@
+#!/bin/bash
+python  ../our_pipeline.py --gpu=0 --primitive_type="line" --output_dir="/home/vage/Downloads/testing_line/line/" --diff_render_it=60 --data_dir="/home/vage/Downloads/abc/" --image_name="00050009_f5e95c39e7f941fdad8c83e5_step_000.png"
